@@ -1,4 +1,4 @@
-import { supbase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 
 export async function GET(request) {
   const {
