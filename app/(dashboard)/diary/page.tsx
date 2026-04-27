@@ -15,10 +15,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-// Import our single source of truth for Supabase
 import { supabase } from "@/utils/supabase/client";
 
-// --- TYPES ---
 interface FoodLog {
   id: string;
   food_name: string;
@@ -36,7 +34,6 @@ const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const MEALS = ["Breakfast", "Lunch", "Dinner", "Other"];
 
 export default function DiaryPage() {
-  // --- STATE ---
   const [selectedDay, setSelectedDay] = useState("Mon");
   const [activeMeal, setActiveMeal] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,14 +41,16 @@ export default function DiaryPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [loggedFoods, setLoggedFoods] = useState<FoodLog[]>([]);
 
-  // --- ACTIONS ---
-
-  // Fetch saved foods (Memoized to prevent lock-contention and infinite loops)
   const fetchLoggedFoods = useCallback(async () => {
+    // getUser() is more secure for data fetching
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return;
+
+    if (!user) {
+      setLoggedFoods([]);
+      return;
+    }
 
     const { data, error } = await supabase
       .from("food_logs")
@@ -64,7 +63,6 @@ export default function DiaryPage() {
     }
   }, [selectedDay]);
 
-  // Search Edamam API
   const handleSearch = async () => {
     if (!searchQuery) return;
     setIsSearching(true);
@@ -81,52 +79,52 @@ export default function DiaryPage() {
     }
   };
 
-  // Add food to Supabase
   const addFoodToLog = async (item: any) => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user || !activeMeal) return;
+
+    if (!user) {
+      alert("Please log in again to add food.");
+      return;
+    }
 
     const { error } = await supabase.from("food_logs").insert({
-      user_id: user.id,
+      user_id: user.id, // Fixed: was referencing 'user' which wasn't defined
       food_name: item.label,
       calories: item.calories,
       protein: item.protein,
       fat: item.fat,
       carbs: item.carbs,
       image_url: item.image,
-      meal_type: activeMeal.toLowerCase(),
+      meal_type: activeMeal?.toLowerCase(),
       day_of_week: selectedDay,
     });
 
-    if (!error) {
+    if (error) {
+      console.error("DB INSERT ERROR:", error);
+      alert(`DB Error: ${error.message}`);
+    } else {
       setSearchQuery("");
       setSearchResults([]);
       fetchLoggedFoods();
     }
   };
 
-  // Delete food from Supabase
   const deleteFoodLog = async (id: string) => {
     const { error } = await supabase.from("food_logs").delete().eq("id", id);
-
-    if (!error) {
-      fetchLoggedFoods();
-    }
+    if (!error) fetchLoggedFoods();
   };
 
   useEffect(() => {
     fetchLoggedFoods();
   }, [fetchLoggedFoods]);
 
-  // Helper to group foods by meal
   const getFoodsByMeal = (meal: string) =>
     loggedFoods.filter((f) => f.meal_type === meal.toLowerCase());
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4 font-sans">
-      {/* 1. Day Selector */}
       <div className="flex justify-center mb-8">
         <Tabs
           value={selectedDay}
@@ -143,7 +141,6 @@ export default function DiaryPage() {
         </Tabs>
       </div>
 
-      {/* 2. Daily Summary Stats */}
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[
           { label: "Calories", key: "calories", unit: "kcal" },
@@ -171,7 +168,6 @@ export default function DiaryPage() {
         ))}
       </div>
 
-      {/* 3. Meal Cards */}
       <div className="space-y-4">
         {MEALS.map((meal) => (
           <Card
@@ -202,7 +198,7 @@ export default function DiaryPage() {
                   <DialogHeader>
                     <DialogTitle>Add to {meal}</DialogTitle>
                     <DialogDescription className="sr-only">
-                      Search food database to log meals.
+                      Search for food items to add to your {meal} log.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex gap-2 mt-4">

@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+
+import { supabase } from "@/utils/supabase/client";
 
 // shadcn card components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
+import WeightCard from "@/components/WeightCard";
+
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
 
@@ -42,6 +44,11 @@ export default function DashboardPage() {
             Daily Macros Progress Coming Soon
           </p>
         </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Row 1: Key Stats */}
+        <WeightCard />
+        {/* ... other summary cards like Calories remaining or Steps ... */}
       </div>
     </div>
   );
