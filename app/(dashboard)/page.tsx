@@ -23,7 +23,7 @@ export default function DashboardPage() {
           Welcome back, {user?.email?.split("@")[0] || "User"}!
         </h1>
         <p className="text-gray-500">
-          Here is what your trajectory looks like today.
+          These are your health metrics as of today.
         </p>
       </header>
 
