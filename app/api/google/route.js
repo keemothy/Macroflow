@@ -6,7 +6,8 @@ export async function GET(request) {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${origin}/auth/callback`,
+      redirectTo: `${origin}/api/auth/callback`,
+      flowType: "pkce",
     },
   });
 
