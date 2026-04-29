@@ -1,11 +1,15 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+
+// shadcn components; use card, and tabs
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlusCircle, Utensils, Search, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
+import { PlusCircle, Utensils, Search, Loader2, Trash2 } from "lucide-react";
+
 import {
   Dialog,
   DialogContent,
@@ -42,7 +46,6 @@ export default function DiaryPage() {
   const [loggedFoods, setLoggedFoods] = useState<FoodLog[]>([]);
 
   const fetchLoggedFoods = useCallback(async () => {
-    // getUser() is more secure for data fetching
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -85,12 +88,11 @@ export default function DiaryPage() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      alert("Please log in again to add food.");
       return;
     }
 
     const { error } = await supabase.from("food_logs").insert({
-      user_id: user.id, // Fixed: was referencing 'user' which wasn't defined
+      user_id: user.id,
       food_name: item.label,
       calories: item.calories,
       protein: item.protein,
@@ -103,7 +105,6 @@ export default function DiaryPage() {
 
     if (error) {
       console.error("DB INSERT ERROR:", error);
-      alert(`DB Error: ${error.message}`);
     } else {
       setSearchQuery("");
       setSearchResults([]);
@@ -284,7 +285,7 @@ export default function DiaryPage() {
                 </div>
               ) : (
                 <p className="text-sm text-slate-400 italic py-2">
-                  No food logged yet...
+                  Start logging your meals!
                 </p>
               )}
             </CardContent>

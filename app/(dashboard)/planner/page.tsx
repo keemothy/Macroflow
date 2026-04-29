@@ -243,7 +243,7 @@ export default function PlannerPage() {
               })
             }
           >
-            Reset
+            Reset Profile
           </Button>
           <Button onClick={handleSave} disabled={loading}>
             {loading ? "Saving..." : "Calculate Macros"}

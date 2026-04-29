@@ -5,20 +5,20 @@ export async function GET(request: Request) {
   const query = searchParams.get("query");
 
   if (!query) {
-    return NextResponse.json({ error: "Query is required" }, { status: 400 });
+    return NextResponse.json({ error: "Missing Query" }, { status: 400 });
   }
 
+  // grab app id and key from env file
   const appId = process.env.EDAMAM_APP_ID;
   const appKey = process.env.EDAMAM_APP_KEY;
 
+  // fetch food data from edamam
   try {
     const response = await fetch(
       `https://api.edamam.com/api/food-database/v2/parser?app_id=${appId}&app_key=${appKey}&ingr=${encodeURIComponent(query)}&nutrition-type=logging`,
     );
 
     if (!response.ok) {
-      const errorBody = await response.text();
-      console.error(`Edamam responded with ${response.status}: ${errorBody}`);
       throw new Error(`Edamam Error ${response.status}`);
     }
 

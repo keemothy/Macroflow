@@ -59,7 +59,7 @@ export default function WeightCard() {
         <div className="flex items-center gap-2">
           <Scale className="w-5 h-5 text-blue-600" />
           <CardTitle className="text-sm font-bold text-slate-800">
-            Today's Weight
+            Please enter your weight for today
           </CardTitle>
         </div>
       </CardHeader>
@@ -92,7 +92,7 @@ export default function WeightCard() {
               ) : savedStatus ? (
                 <CheckCircle2 className="w-4 h-4" />
               ) : (
-                "Save"
+                "Save Weight"
               )}
             </Button>
           </div>
